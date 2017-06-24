@@ -405,15 +405,8 @@ class PyLua(ast.NodeVisitor):
         self.emit('}')
 
     def visit_Name(self, node):
-        if node.id == 'None':
-            self.emit('nil')
-        elif node.id == 'True':
-            self.emit('true')
-        elif node.id == 'False':
-            self.emit('false')
-        else:
-            self.emit(node.id)
-            self.env_add(node.id)
+        self.emit(node.id)
+        self.env_add(node.id)
 
     def visit_Assign(self, node):
         self.indent()
@@ -742,6 +735,16 @@ class PyLua(ast.NodeVisitor):
         self.emit(' and ')
     def visit_Or(self, node):
         self.emit(' or ')
+
+    def visit_NameConstant(self, node):
+        if node.value == None:
+            self.emit('nil')
+        elif node.value == True:
+            self.emit('true')
+        elif node.value == False:
+            self.emit('false')
+        else:
+            assert 0, "Unknown NameConstant"
 
     def visit_Attribute(self, node):
         self.visit(node.value)
