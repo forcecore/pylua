@@ -438,9 +438,13 @@ class PyLua(ast.NodeVisitor):
                 if isinstance(x, ast.Name) and not self.env_has(x.id):
                     newlocals.append(x.id)
             if len(newlocals) == len(node.targets[0].elts):
-                self.emit('local ')
+                # is it global or local? 
+                if self.indentation > 0:
+                    self.emit('local ')
             elif len(newlocals)>0:
-                self.emit('local ')
+                # is it global or local? 
+                if self.indentation > 0:
+                    self.emit('local ')
                 self.emit(', '.join(newlocals))
                 self.eol()
                 self.indent()
@@ -454,7 +458,9 @@ class PyLua(ast.NodeVisitor):
         else:
             x = node.targets[0]
             if isinstance(x, ast.Name) and not self.env_has(x.id):
-                self.emit('local ')
+                # is it global or local? 
+                if self.indentation > 0:
+                    self.emit('local ')
             self.visit(x)
             self.emit(' = ')
             self.visit(node.value)
