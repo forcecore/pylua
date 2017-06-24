@@ -229,9 +229,9 @@ class PyLua(ast.NodeVisitor):
                 self.visit(node.right)
             self.emit(')')
         elif isinstance(node.op, ast.Mod):
-            self.emit('PYLUA.mod(')
+            self.emit('(')
             self.visit(node.left)
-            self.emit(', ')
+            self.emit(' % ')
             self.visit(node.right)
             self.emit(')')
         elif isinstance(node.op, ast.Add) and isinstance(node.left, ast.Str):
@@ -449,7 +449,7 @@ class PyLua(ast.NodeVisitor):
                 self.eol()
                 self.indent()
             self.visit_all_sep(node.targets[0].elts, ', ')
-            self.emit(' = table.unpack(')
+            self.emit(' = unpack(')
             self.visit(node.value)
             self.emit(')\n')
         elif len(node.targets) > 1:
@@ -649,7 +649,7 @@ class PyLua(ast.NodeVisitor):
             self.indent()
             self.emit('local ')
             self.visit_all_sep(ituple.elts, ', ')
-            self.emit(' = table.unpack(PYLUA_x)\n')
+            self.emit(' = unpack(PYLUA_x)\n')
         self.visit_all(node.body)
         wantcontinue = {i for i in self.wantcontinue if i>=self.indentation}
         if len(wantcontinue) > 0:
@@ -713,11 +713,10 @@ class PyLua(ast.NodeVisitor):
                 self.visit(node.left)
                 self.emit(']')
                 return
-            self.emit('PYLUA.op_in(')
-            self.visit(node.left)
-            self.emit(', ')
             self.visit_all_sep(node.comparators, ', ')
-            self.emit(')')
+            self.emit('[')
+            self.visit(node.left)
+            self.emit('] ~= nil')
         elif len(node.ops)==1 and isinstance(node.ops[0], ast.Is):
             if len(node.comparators)==1 and isinstance(node.comparators[0], ast.Name) and \
                     node.comparators[0].id == 'None':
