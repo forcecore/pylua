@@ -343,7 +343,7 @@ class PyLua(ast.NodeVisitor):
         if isinstance(node.func, ast.Attribute) and \
                 ((not isinstance(node.func.value, ast.Name)) or node.func.value.id not in self.nocolon):
             self.visit(node.func.value)
-            self.emit(':')
+            self.emit('.')
             self.emit(node.func.attr)
         else:
             self.visit(node.func)
