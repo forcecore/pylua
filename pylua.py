@@ -234,6 +234,10 @@ class PyLua(ast.NodeVisitor):
             self.emit(', ')
             self.visit(node.right)
             self.emit(')')
+        elif isinstance(node.op, ast.Add) and isinstance(node.left, ast.Str):
+            self.visit(node.left)
+            self.emit(' .. ')
+            self.visit(node.right)
         else:
             self.emit_paren_maybe(node, node.left, '(')
             self.visit(node.left)
