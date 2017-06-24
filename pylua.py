@@ -752,7 +752,7 @@ class PyLua(ast.NodeVisitor):
         # TODO: prettier multiline strings (but must not have escape sequences other than \n)
         self.emit("'")
         # FIXME: better escaping of strings
-        self.emit(node.s.encode('utf8').encode('string_escape'))
+        self.emit(node.s)
         #self.emit(node.s.replace('\\', '\\\\').replace('"', '\\"'))
         self.emit("'")
 
