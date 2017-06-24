@@ -1,4 +1,4 @@
-import cStringIO
+import io
 import sys
 import os
 import ast
@@ -44,7 +44,7 @@ def dump(node, annotate_fields=True, include_attributes=False, whitespace=False)
 
 class PyLua(ast.NodeVisitor):
     def __init__(self):
-        self.stream = cStringIO.StringIO()
+        self.stream = io.StringIO()
         self.indentation = 0
         # variable name scopes (environments); FIXME: leaky heuristic
         self.envs = [{}]
@@ -334,7 +334,7 @@ class PyLua(ast.NodeVisitor):
             return
         stdfuncs = {'max':'math.max', 'min':'math.min', 'ord':'PYLUA.ord', 'str':'tostring',
                     'map':'PYLUA.map', 'sum':'PYLUA.sum', 'open':'PYLUA.open'}
-        if isinstance(node.func, ast.Name) and node.func.id in stdfuncs.keys():
+        if isinstance(node.func, ast.Name) and node.func.id in list(stdfuncs.keys()):
             self.emit(stdfuncs[node.func.id])
             self.emit('(')
             self.visit_all_sep(node.args, ', ')
@@ -822,7 +822,7 @@ def run_file(filename, dump=False):
 
     lua_program = visitor.stream.getvalue()
     if dump:
-        print _dump_ast(tree, include_attributes=True, whitespace=True)
+        print(_dump_ast(tree, include_attributes=True, whitespace=True))
     #    print '-'*80
     #    print lua_program
     #    print '-'*80
@@ -832,7 +832,7 @@ def run_file(filename, dump=False):
 
 def main():
     filename = sys.argv[1]
-    print run_file(filename, True)
+    print(run_file(filename, True))
 
 def runjit(program):
     filename = '_pylua_temp.lua'
