@@ -700,9 +700,9 @@ class PyLua(ast.NodeVisitor):
 
     def visit_Compare(self, node):
         if len(node.ops)==1 and isinstance(node.ops[0], ast.NotIn):
-            self.visit(node.left)
-            self.emit('[')
             self.visit_all_sep(node.comparators, ', ')
+            self.emit('[')
+            self.visit(node.left)
             self.emit('] == nil')
         elif len(node.ops)==1 and isinstance(node.ops[0], ast.In):
             if len(node.comparators)==1 and isinstance(node.comparators[0], ast.Attribute) and \
