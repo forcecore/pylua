@@ -231,7 +231,13 @@ class PyLua(ast.NodeVisitor):
         elif isinstance(node.op, ast.Mod):
             self.emit('(')
             self.visit(node.left)
-            self.emit(' % ')
+            self.emit('%')
+            self.visit(node.right)
+            self.emit(')')
+        elif isinstance(node.op, ast.FloorDiv):
+            self.emit('(')
+            self.visit(node.left)
+            self.emit('//')
             self.visit(node.right)
             self.emit(')')
         elif isinstance(node.op, ast.Add) and isinstance(node.left, ast.Str):
