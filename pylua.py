@@ -161,6 +161,9 @@ class PyLua(ast.NodeVisitor):
         self.visit_all_sep(node.elts, ', ')
         self.emit('}')
 
+    def visit_arg(self, node):
+        self.emit(node.arg)
+
     def visit_arguments(self, node):
         self.visit_all_sep(node.args, ', ')
         # FIXME: kwargs, ...
@@ -294,6 +297,21 @@ class PyLua(ast.NodeVisitor):
             self.visit(node.args[0])
             self.emit(', ')
             self.visit(node.func.value)
+            self.emit(')')
+            return
+        if isinstance(node.func, ast.Attribute) and \
+                node.func.attr == "lower":
+            self.emit('string.')
+            self.emit(node.func.attr)
+            self.emit('(')
+            self.visit(node.func.value)
+            if len(node.keywords)>0:
+                self.emit(', PYLUA.keywords{')
+                self.visit_all_sep(node.keywords, ', ')
+                self.emit('}')
+            if len(node.args)>0:
+                self.emit(', ')
+                self.visit_all_sep(node.args, ', ')
             self.emit(')')
             return
         if isinstance(node.func, ast.Attribute) and \
@@ -672,11 +690,10 @@ class PyLua(ast.NodeVisitor):
 
     def visit_Compare(self, node):
         if len(node.ops)==1 and isinstance(node.ops[0], ast.NotIn):
-            self.emit('PYLUA.op_not_in(')
             self.visit(node.left)
-            self.emit(', ')
+            self.emit('[')
             self.visit_all_sep(node.comparators, ', ')
-            self.emit(')')
+            self.emit('] == nil')
         elif len(node.ops)==1 and isinstance(node.ops[0], ast.In):
             if len(node.comparators)==1 and isinstance(node.comparators[0], ast.Attribute) and \
                     node.comparators[0].attr == 'keys':
