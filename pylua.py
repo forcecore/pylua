@@ -836,7 +836,7 @@ def main():
 
 def runjit(program):
     filename = '_pylua_temp.lua'
-    open(filename, 'wb').write(program)
+    open(filename, 'w').write(program)
     #try:
     #    args = [lua_exe, filename]
     #    process = subprocess.Popen(args, stdout = subprocess.PIPE)
